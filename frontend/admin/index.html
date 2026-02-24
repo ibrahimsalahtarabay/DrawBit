@@ -338,6 +338,10 @@
         </div>
       </div>
       <div class="form-group">
+          <label>Payment Account</label>
+          <input type="text" id="invPaymentAccount" placeholder="Bank name / Account number / Vodafone Cash etc."/>
+      </div>
+      <div class="form-group">
         <label>Address</label>
         <input type="text" id="invAddress" placeholder="Client address"/>
       </div>
@@ -724,6 +728,7 @@ function resetInvoiceForm() {
   document.getElementById('invQuoteTo').value    = '';
   document.getElementById('invPhone').value      = '';
   document.getElementById('invEmail').value      = '';
+  document.getElementById('invPaymentAccount').value = '';
   document.getElementById('invAddress').value    = '';
   document.getElementById('invClientId').value   = '';
   document.getElementById('invStatus').value     = 'draft';
@@ -764,6 +769,7 @@ async function editInvoice(id) {
   document.getElementById('invQuoteTo').value        = data.quote_to        || '';
   document.getElementById('invPhone').value          = data.client_phone    || '';
   document.getElementById('invEmail').value          = data.client_email    || '';
+  document.getElementById('invPaymentAccount').value          = data.payment_account    || '';
   document.getElementById('invAddress').value        = data.client_address  || '';
   document.getElementById('invCompanyName').value    = data.company_name    || '';
   document.getElementById('invCompanyAddress').value = data.company_address || '';
@@ -802,6 +808,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     quote_to:        document.getElementById('invQuoteTo').value,
     client_phone:    document.getElementById('invPhone').value,
     client_email:    document.getElementById('invEmail').value,
+    payment_account: document.getElementById('invPaymentAccount').value,
     client_address:  document.getElementById('invAddress').value,
     company_name:    document.getElementById('invCompanyName').value,
     company_address: document.getElementById('invCompanyAddress').value,

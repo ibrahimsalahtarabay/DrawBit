@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   client_phone     VARCHAR(50),
   client_address   TEXT,
   client_email     VARCHAR(200),
+  payment_account  TEXT,
 
   company_name     VARCHAR(200) NOT NULL DEFAULT 'DrawBit',
   company_address  TEXT         NOT NULL DEFAULT '37, Hassan Aflaton St., Ard El Golf, Nasr City',

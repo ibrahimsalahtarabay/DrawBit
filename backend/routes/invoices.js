@@ -173,7 +173,7 @@ router.get('/:id', authenticate, async (req, res) => {
 router.post('/', authenticate, requireAdmin, async (req, res) => {
   const {
     client_id, invoice_number, invoice_date, quote_to,
-    client_phone, client_address, client_email,
+    client_phone, client_address, client_email, payment_account,
     company_name, company_address, company_website, company_logo_url,
     vat_percent, currency, terms, line_items = [],
   } = req.body;
@@ -190,7 +190,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO invoices (
         client_id, invoice_number, invoice_date, quote_to,
-        client_phone, client_address, client_email,
+        client_phone, client_address, client_email, payment_account,
         company_name, company_address, company_website, company_logo_url,
         vat_percent, currency, terms
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
@@ -203,6 +203,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
         client_phone     || null,
         client_address   || null,
         client_email     || null,
+        payment_account || null,
         company_name     || 'DrawBit',
         company_address  || '37, Hassan Aflaton St., Ard El Golf, Nasr City',
         company_website  || 'www.drawbit.tech',
@@ -236,7 +237,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   const id = req.params.id;
   const {
     invoice_number, invoice_date, quote_to,
-    client_phone, client_address, client_email,
+    client_phone, client_address, client_email, payment_account,
     company_name, company_address, company_website, company_logo_url,
     vat_percent, currency, terms, status, line_items,
   } = req.body;
@@ -253,6 +254,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     if (client_phone     !== undefined) set('client_phone',     client_phone);
     if (client_address   !== undefined) set('client_address',   client_address);
     if (client_email     !== undefined) set('client_email',     client_email);
+    if (payment_account     !== undefined) set('payment_account',     payment_account);
     if (company_name     !== undefined) set('company_name',     company_name);
     if (company_address  !== undefined) set('company_address',  company_address);
     if (company_website  !== undefined) set('company_website',  company_website);

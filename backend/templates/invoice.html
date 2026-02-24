@@ -39,7 +39,7 @@ tbody tr:nth-child(even){background:#fafafa}
       <img class="logo-img" src="{{company_logo_url}}" alt="Logo"/>
     {{/if}}
     {{#if company_name}}
-      <div class="logo-text">{{company_name}}</div>
+      <div class="logo-text">Draw<span style="color:#2ecc71">Bit</span></div>
     {{/if}}
   </div>
   <div class="company-info">
@@ -56,17 +56,18 @@ tbody tr:nth-child(even){background:#fafafa}
 <div class="client-block">
   <div>Quote to: <strong>{{quote_to}}</strong></div>
   {{#if invoice_number}}<div><span>Invoice #:</span> {{invoice_number}}</div>{{/if}}
-  {{#if client_phone}}<div><span>Phone:</span> {{client_phone}}</div>{{/if}}
-  {{#if client_address}}<div><span>Address:</span> {{client_address}}</div>{{/if}}
+  {{#if client_phone}}<div><span>Provider Phone:</span> {{client_phone}}</div>{{/if}}
   {{#if client_email}}<div><span>Email:</span> {{client_email}}</div>{{/if}}
+  {{#if client_address}}<div><span>Provider Address:</span> {{client_address}}</div>{{/if}}
+  {{#if payment_account}}<div><span>Payment Account:</span> {{payment_account}}</div>{{/if}}
 </div>
 
 <table>
   <thead>
     <tr>
       <th style="width:40px">#</th>
-      <th>Items</th>
-      <th style="width:60px">QTY</th>
+      <th>Product / Service</th>
+      <th style="width:90px">No. of Licenses</th>
       <th style="width:130px">Unit Price/{{currency}}</th>
       <th style="width:130px">Total Price/{{currency}}</th>
     </tr>
@@ -97,11 +98,11 @@ tbody tr:nth-child(even){background:#fafafa}
 </table>
 
 <div class="terms">
-  <h3>Terms &amp; Conditions:</h3>
+  <h3>Commercial Terms:</h3>
   {{{terms_html}}}
 </div>
 
-<div class="footer">{{company_website}}</div>
+<div class="footer"></div>
 
 </body>
 </html>
