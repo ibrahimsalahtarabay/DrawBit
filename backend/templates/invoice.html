@@ -7,7 +7,7 @@
 body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;padding:40px 50px}
 .header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:2.5px solid #2ecc71;margin-bottom:28px}
 .logo-img{max-height:70px;max-width:160px;object-fit:contain}
-.logo-text{font-size:22pt;font-weight:800;letter-spacing:1px}
+.logo-text{font-size:22pt;font-weight:800;color:#0d2137;letter-spacing:1px}
 .company-info{text-align:right;line-height:1.7;color:#444}
 .company-info .cname{font-size:15pt;font-weight:700;color:#0d2137}
 .doc-date{text-align:right;margin-bottom:30px;font-size:10pt;color:#555}
@@ -39,7 +39,7 @@ tbody tr:nth-child(even){background:#fafafa}
       <img class="logo-img" src="{{company_logo_url}}" alt="Logo"/>
     {{/if}}
     {{#if company_name}}
-      <div class="logo-text"><span style="color:#0d2137">Draw</span><span style="color:#2ecc71">Bit</span></div>
+      <div class="logo-text">Draw<span style="color:#2ecc71">Bit</span></div>
     {{/if}}
   </div>
   <div class="company-info">
