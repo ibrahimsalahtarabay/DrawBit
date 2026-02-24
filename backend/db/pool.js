@@ -1,10 +1,10 @@
 const { Pool } = require('pg');
 
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:tmkFLOVnfxzrLbTaFQdofBEMoQzsspGg@crossover.proxy.rlwy.net:24532/railway';
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
+  connectionString,
+  ssl: { rejectUnauthorized: false },
 });
 
 pool.on('error', (err) => {
