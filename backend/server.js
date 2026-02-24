@@ -1,6 +1,10 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'SET ✅' : 'MISSING ❌');
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET ✅' : 'MISSING ❌');
+
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
