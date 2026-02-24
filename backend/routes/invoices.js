@@ -121,8 +121,13 @@ router.get('/:id/pdf', authenticate, async (req, res) => {
     // Try Puppeteer; fall back to HTML preview if not available
     try {
       const puppeteer = require('puppeteer');
-      const browser   = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      const browser = await puppeteer.launch({
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
         headless: 'new',
       });
       const page = await browser.newPage();
