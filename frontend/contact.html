@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — DrawBit</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: start;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 24px; }
+    .contact-item {
+      display: flex; align-items: flex-start; gap: 18px;
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      transition: var(--transition);
+    }
+    .contact-item:hover { border-color: rgba(46,204,113,0.35); }
+    .contact-icon {
+      width: 46px; height: 46px; flex-shrink: 0;
+      background: var(--green-glow);
+      border: 1px solid rgba(46,204,113,0.25);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .contact-item h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .contact-item p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .contact-item a { color: var(--green); text-decoration: none; }
+    .contact-item a:hover { text-decoration: underline; }
+
+    .contact-form-card {
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+    }
+    .contact-form-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .contact-form-card > p {
+      color: var(--muted); font-size: 0.9rem; margin-bottom: 28px;
+    }
+
+    @media (max-width: 768px) {
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Draw<span>Bit</span></a>
+  <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="portal.html">Client Portal</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+</nav>
+
+<main class="page-wrapper">
+  <div class="container section">
+    <div class="reveal" style="margin-bottom:56px">
+      <div class="section-label">Get In Touch</div>
+      <h1 class="section-title">Contact DrawBit</h1>
+      <p class="section-sub">Have a question about licensing or want a quotation? Reach out and we'll get back to you promptly.</p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- Info -->
+      <div class="contact-info reveal">
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div>
+            <h3>Email</h3>
+            <p><a href="mailto:info@drawbit.tech">info@drawbit.tech</a></p>
+            <p>We respond within 1 business day.</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <h3>Office Address</h3>
+            <p>37, Hassan Aflaton St.,<br/>Ard El Golf, Nasr City,<br/>Cairo, Egypt</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <h3>Phone</h3>
+            <p><a href="tel:+20222623000">+20 2 2262 3000</a></p>
+            <p>Sunday – Thursday, 9am – 5pm</p>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">🔑</div>
+          <div>
+            <h3>Client Portal Access</h3>
+            <p>Need portal credentials? Email us with your company name and we'll set up your account.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick contact form (static — no backend needed for contact form) -->
+      <div class="contact-form-card reveal">
+        <h2>Send a Message</h2>
+        <p>Fill in the form and our team will be in touch.</p>
+
+        <div id="contactAlert"></div>
+
+        <form id="contactForm">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Eng. Ahmed Hassan" required/>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="ahmed@company.com" required/>
+          </div>
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" placeholder="Your company name"/>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Tell us about your Autodesk licensing needs…" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--navy-mid);border-top:1px solid var(--border);padding:28px;text-align:center">
+  <p style="color:var(--muted);font-size:0.85rem">© <span id="yr"></span> DrawBit · Authorized Autodesk Partner</p>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  document.getElementById('contactForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const el = document.getElementById('contactAlert');
+    el.innerHTML = `<div class="alert alert-success">✅ Message received! We'll get back to you within 1 business day.</div>`;
+    e.target.reset();
+  });
+
+  const observer = new IntersectionObserver(entries =>
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

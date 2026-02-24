@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DrawBit — Autodesk Solutions</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding-top: 68px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(46,204,113,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 10% 80%, rgba(46,204,113,0.05) 0%, transparent 50%);
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--green);
+      margin-bottom: 20px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 32px; height: 2px; background: var(--green);
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 5.5vw, 4.5rem);
+      font-weight: 400; line-height: 1.08;
+      letter-spacing: -1.5px;
+      color: var(--white);
+      margin-bottom: 22px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--green);
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 440px;
+      line-height: 1.75;
+      margin-bottom: 38px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-cube {
+      width: 320px; height: 320px;
+      position: relative;
+    }
+    .cube-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(46,204,113,0.2);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .cube-ring:nth-child(1) { width: 100%; height: 100%; animation: spin 18s linear infinite; }
+    .cube-ring:nth-child(2) { width: 72%; height: 72%; animation: spin 12s linear infinite reverse; border-color: rgba(46,204,113,0.35); }
+    .cube-ring:nth-child(3) { width: 44%; height: 44%; animation: spin 8s linear infinite; border-color: rgba(46,204,113,0.5); }
+    .cube-center {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+      background: var(--green);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 0 40px rgba(46,204,113,0.4);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 40px rgba(46,204,113,0.4); }
+      50%      { box-shadow: 0 0 70px rgba(46,204,113,0.7); }
+    }
+
+    /* Floating stats */
+    .hero-stat {
+      position: absolute;
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      animation: float 5s ease-in-out infinite;
+    }
+    .hero-stat:nth-child(2) { top: 0%; right: -10%; animation-delay: -1.5s; }
+    .hero-stat:nth-child(3) { bottom: 5%; left: -8%; animation-delay: -3s; }
+    .hero-stat .stat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--green);
+    }
+    .hero-stat .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid; grid-template-columns: 0fr 1.4fr;
+      gap: 64px; align-items: Top;
+    }
+    .about-img-block {
+      position: relative;
+    }
+    .about-img-inner {
+      width: 100%; aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--navy-light) 0%, rgba(46,204,113,0.08) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+
+    .about-features {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-top: 32px;
+    }
+    .about-feat {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .about-feat::before { content: '✦'; color: var(--green); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px; margin-top: 48px;
+    }
+    .project-card {
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(46,204,113,0.4);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .project-thumb {
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, var(--navy-mid) 0%, rgba(46,204,113,0.1) 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-body { padding: 20px; }
+    .project-tag {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--green);
+      margin-bottom: 8px;
+    }
+    .project-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--white); margin-bottom: 8px;
+    }
+    .project-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Clients ── */
+    .clients-bg { background: var(--navy-mid); }
+    .clients-logos {
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      gap: 40px; margin-top: 48px;
+    }
+    .client-logo {
+      background: var(--navy-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 32px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      color: var(--muted);
+      transition: var(--transition);
+      letter-spacing: 0.5px;
+    }
+    .client-logo:hover { color: var(--white); border-color: rgba(46,204,113,0.35); }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .footer-logo span { color: var(--green); }
+    .footer p { color: var(--muted); font-size: 0.85rem; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .about-grid { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-features { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">Draw<span>Bit</span></a>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="portal.html">Client Portal</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow">Authorized Autodesk Partner</div>
+        <h1>Powering Design with <em>Autodesk</em> Solutions</h1>
+        <p class="hero-sub">
+          We deliver best-in-class Autodesk software licensing, implementation, and support for engineering and architectural firms across the region.
+        </p>
+        <div class="hero-actions">
+          <a href="contact.html" class="btn btn-primary">Get in Touch</a>
+          <a href="#projects" class="btn btn-outline">View Projects</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-cube">
+          <div class="cube-ring"></div>
+          <div class="cube-ring"></div>
+          <div class="cube-ring"></div>
+          <div class="cube-center">⬡</div>
+          <div class="hero-stat">
+            <div class="stat-val">5+</div>
+            <div class="stat-lbl">Happy Clients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── About ── -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img-block reveal">
+        <div class="about-img-inner">🏗️</div>
+        <div class="about-accent"></div>
+      </div>
+      <div class="reveal">
+        <div class="section-label">About Us</div>
+        <h2 class="section-title">The Region's Trusted Autodesk Specialists</h2>
+        <p class="section-sub">
+          DrawBit is an authorized Autodesk reseller with deep expertise in CAD, BIM, and cloud-based design software. From AutoCAD to Revit, Civil 3D to BIM 360 — we handle licensing, deployment, training, and ongoing support.
+        </p>
+        <div class="about-features">
+          <div class="about-feat">Authorized Autodesk Reseller</div>
+          <div class="about-feat">Commercial &amp; Cloud Licensing</div>
+          <div class="about-feat">Technical Implementation</div>
+          <div class="about-feat">Renewal Management</div>
+          <div class="about-feat">On-site Training</div>
+          <div class="about-feat">Fast Electronic Delivery</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Projects ── -->
+<section class="section" id="projects">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Our Work</div>
+      <h2 class="section-title">Featured Projects</h2>
+      <p class="section-sub">A selection of software deployments and solutions we've delivered for clients across industries.</p>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-thumb">🏢</div>
+        <div class="project-body">
+          <div class="project-tag">Architecture</div>
+          <div class="project-title">Revit BIM 360 Rollout</div>
+          <p class="project-desc">Full BIM 360 cloud deployment for a 120-seat architecture firm, including migration and staff training.</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">🛣️</div>
+        <div class="project-body">
+          <div class="project-tag">Civil Engineering</div>
+          <div class="project-title">Civil 3D Infrastructure Suite</div>
+          <p class="project-desc">Multi-seat Civil 3D licensing and implementation for a national infrastructure consultancy.</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">⚙️</div>
+        <div class="project-body">
+          <div class="project-tag">Manufacturing</div>
+          <div class="project-title">Inventor + Vault Deployment</div>
+          <p class="project-desc">Autodesk Inventor and Vault PDM system for a mechanical engineering manufacturer.</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">🗺️</div>
+        <div class="project-body">
+          <div class="project-tag">GIS &amp; Mapping</div>
+          <div class="project-title">AutoCAD Map 3D Enterprise</div>
+          <p class="project-desc">Spatial data management solution for a government urban planning department.</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">🌆</div>
+        <div class="project-body">
+          <div class="project-tag">Real Estate</div>
+          <div class="project-title">AutoCAD LT Portfolio License</div>
+          <p class="project-desc">Centralized license management for a real estate developer's 40-seat AutoCAD LT deployment.</p>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">🔬</div>
+        <div class="project-body">
+          <div class="project-tag">Industrial</div>
+          <div class="project-title">Fusion 360 Team Subscription</div>
+          <p class="project-desc">Fusion 360 team plan for a product design startup — setup, training, and annual renewal management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── Clients ── -->
+<section class="section clients-bg" id="clients">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">Trusted By</div>
+      <h2 class="section-title">Our Clients</h2>
+      <p class="section-sub" style="margin:14px auto 0">
+        From engineering consultancies to government entities — we serve organizations that rely on Autodesk tools every day.
+      </p>
+    </div>
+    <div class="clients-logos">
+      <div class="client-logo reveal">Arabtech</div>
+      <div class="client-logo reveal">EHAF Consulting</div>
+      <div class="client-logo reveal">Hassan Allam</div>
+      <div class="client-logo reveal">Dar Al-Handasah</div>
+      <div class="client-logo reveal">AECOM Egypt</div>
+      <div class="client-logo reveal">Cairo Metro</div>
+      <div class="client-logo reveal">MOTT MacDonald</div>
+      <div class="client-logo reveal">New Urban Communities</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer">
+  <div class="footer-logo">Draw<span>Bit</span></div>
+  <p>Authorized Autodesk Partner · Cairo, Egypt</p>
+  <p style="margin-top:8px">© <span id="yr"></span> DrawBit. All rights reserved.</p>
+</footer>
+
+<script>
+  // Year
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // Nav toggle
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        // Stagger siblings
+        const siblings = [...e.target.parentElement.querySelectorAll('.reveal')];
+        const idx = siblings.indexOf(e.target);
+        setTimeout(() => {
+          e.target.classList.add('visible');
+        }, idx * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

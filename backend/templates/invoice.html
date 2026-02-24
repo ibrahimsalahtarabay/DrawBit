@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;color:#222;padding:40px 50px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:2.5px solid #2ecc71;margin-bottom:28px}
+.logo-img{max-height:70px;max-width:160px;object-fit:contain}
+.logo-text{font-size:22pt;font-weight:800;color:#0d2137;letter-spacing:1px}
+.company-info{text-align:right;line-height:1.7;color:#444}
+.company-info .cname{font-size:15pt;font-weight:700;color:#0d2137}
+.doc-date{text-align:right;margin-bottom:30px;font-size:10pt;color:#555}
+h1.title{text-align:center;font-size:22pt;font-weight:400;text-decoration:underline;margin-bottom:28px;color:#0d2137}
+.client-block{margin-bottom:28px;line-height:1.9;font-size:11pt}
+.client-block span{color:#777}
+table{width:100%;border-collapse:collapse;font-size:10.5pt}
+thead tr{background:#f0f0f0}
+th{padding:10px 14px;text-align:center;font-weight:600;border:1px solid #ccc;color:#0d2137}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:10px 14px;border:1px solid #ddd;text-align:center;vertical-align:top}
+td:nth-child(2){text-align:left}
+tbody tr:nth-child(even){background:#fafafa}
+.totals td{background:#f4f4f4;font-weight:500;text-align:right;border-top:1px solid #ccc}
+.totals td:last-child{font-weight:600}
+.grand td{background:#0d2137;color:#fff;font-weight:700;text-align:right}
+.terms{margin-top:40px;page-break-inside:avoid}
+.terms h3{font-size:12pt;font-weight:700;text-decoration:underline;margin-bottom:10px;color:#0d2137}
+.terms p,.terms li{font-size:10pt;line-height:1.9;color:#333}
+.terms ul{padding-left:22px;list-style:disc}
+.footer{margin-top:50px;padding-top:12px;border-top:2.5px solid #2ecc71;text-align:center;font-size:9pt;color:#888}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    {{#if company_logo_url}}
+      <img class="logo-img" src="{{company_logo_url}}" alt="Logo"/>
+    {{/if}}
+    {{#if company_name}}
+      <div class="logo-text">{{company_name}}</div>
+    {{/if}}
+  </div>
+  <div class="company-info">
+    <div class="cname">{{company_name}}</div>
+    <div>{{company_address}}</div>
+    <div>{{company_website}}</div>
+  </div>
+</div>
+
+<div class="doc-date">Date: {{invoice_date}}</div>
+
+<h1 class="title">Quotation</h1>
+
+<div class="client-block">
+  <div>Quote to: <strong>{{quote_to}}</strong></div>
+  {{#if invoice_number}}<div><span>Invoice #:</span> {{invoice_number}}</div>{{/if}}
+  {{#if client_phone}}<div><span>Phone:</span> {{client_phone}}</div>{{/if}}
+  {{#if client_address}}<div><span>Address:</span> {{client_address}}</div>{{/if}}
+  {{#if client_email}}<div><span>Email:</span> {{client_email}}</div>{{/if}}
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:40px">#</th>
+      <th>Items</th>
+      <th style="width:60px">QTY</th>
+      <th style="width:130px">Unit Price/{{currency}}</th>
+      <th style="width:130px">Total Price/{{currency}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each line_items}}
+    <tr>
+      <td>{{inc @index}}</td>
+      <td>{{this.description}}</td>
+      <td>{{this.qty}}</td>
+      <td>{{formatNum this.unit_price}}</td>
+      <td>{{formatNum this.total}}</td>
+    </tr>
+    {{/each}}
+    <tr class="totals">
+      <td colspan="4">Sub Total</td>
+      <td>{{formatNum subtotal}}</td>
+    </tr>
+    <tr class="totals">
+      <td colspan="4">{{vat_percent}}% VAT</td>
+      <td>{{formatNum vat_amount}}</td>
+    </tr>
+    <tr class="grand">
+      <td colspan="4">Grand Total in {{currency}}</td>
+      <td>{{formatNum grand_total}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="terms">
+  <h3>Terms &amp; Conditions:</h3>
+  {{{terms_html}}}
+</div>
+
+<div class="footer">{{company_website}}</div>
+
+</body>
+</html>

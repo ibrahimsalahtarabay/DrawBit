@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — DrawBit</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <style>
+    /* ── Admin Layout ── */
+    .admin-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; flex-shrink: 0;
+      background: var(--navy-mid);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; bottom: 0; left: 0;
+      z-index: 50;
+    }
+    .sidebar-logo {
+      padding: 24px 24px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo span { color: var(--green); }
+    .sidebar-logo small {
+      display: block; font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 400;
+      color: var(--muted); letter-spacing: 1.5px;
+      text-transform: uppercase; margin-top: 2px;
+    }
+    .sidebar-nav { flex: 1; padding: 16px 12px; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; border-radius: 8px;
+      font-size: 0.9rem; color: var(--muted);
+      text-decoration: none;
+      transition: var(--transition); margin-bottom: 4px;
+    }
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      background: var(--green-glow);
+      color: var(--white);
+    }
+    .sidebar-nav a.active { color: var(--green); }
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem; color: var(--muted);
+    }
+
+    /* Main */
+    .admin-main {
+      margin-left: 240px;
+      flex: 1;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    .admin-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 36px;
+    }
+    .admin-topbar h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+    }
+
+    /* Tabs */
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Line items builder */
+    .line-items-table {
+      width: 100%; border-collapse: collapse; margin-bottom: 8px;
+    }
+    .line-items-table th {
+      text-align: left; padding: 8px 10px;
+      font-size: 0.78rem; color: var(--muted);
+      font-weight: 600; letter-spacing: 0.4px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    .line-items-table td { padding: 6px 4px; }
+    .line-items-table input {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px; padding: 8px 10px;
+      color: var(--white); font-size: 0.88rem;
+      font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border-color var(--transition);
+    }
+    .line-items-table input:focus { border-color: var(--green); }
+
+    /* Totals preview */
+    .totals-preview {
+      background: var(--navy-mid);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .totals-preview .row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .totals-preview .row:last-child {
+      border-bottom: none;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1rem;
+      color: var(--green);
+      margin-top: 4px; padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .totals-preview .row span:first-child { color: var(--muted); }
+
+    /* Status indicator */
+    .status-dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; margin-right: 6px;
+    }
+    .dot-draft  { background: var(--muted); }
+    .dot-sent   { background: #3498db; }
+    .dot-paid   { background: var(--green); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .admin-main { margin-left: 0; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Admin Login ── -->
+<div id="adminLogin" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:420px">
+    <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:4px">Draw<span style="color:var(--green)">Bit</span></div>
+    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:28px">Admin Panel</p>
+    <div id="adminLoginAlert"></div>
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="adminUser" placeholder="admin" required/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="adminPass" placeholder="••••••••" required/>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center" id="adminLoginBtn">
+        Sign In to Admin
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Admin Shell ── -->
+<div id="adminShell" style="display:none">
+  <div class="admin-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Draw<span>Bit</span>
+        <small>Admin Panel</small>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="active" onclick="switchTab('clients',this)">👥 Clients</a>
+        <a href="#" onclick="switchTab('invoices',this)">📄 Invoices</a>
+        <a href="#" onclick="switchTab('password',this)">🔑 Change Password</a>
+        <a href="../index.html" target="_blank">🌐 View Site</a>
+      </nav>
+      <div class="sidebar-footer">
+        Logged in as <strong id="adminName">—</strong><br/>
+        <a href="#" onclick="adminLogout()" style="color:var(--green);text-decoration:none;font-size:0.8rem">Sign Out</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+
+      <!-- ─── CLIENTS TAB ─── -->
+      <div class="tab-pane active" id="tab-clients">
+        <div class="admin-topbar">
+          <h1>Clients</h1>
+          <button class="btn btn-primary" onclick="openModal('clientModal')">+ New Client</button>
+        </div>
+
+        <div id="clientsState" class="state-box"><div class="icon">⏳</div>Loading…</div>
+
+        <div class="table-wrap" id="clientsWrap" style="display:none">
+          <table class="data-table">
+            <thead><tr>
+              <th>Name</th><th>Username</th><th>Email</th><th>Created</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="clientsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── INVOICES TAB ─── -->
+      <div class="tab-pane" id="tab-invoices">
+        <div class="admin-topbar">
+          <h1>Invoices</h1>
+          <button class="btn btn-primary" onclick="openInvoiceModal()">+ New Invoice</button>
+        </div>
+
+        <div id="invoicesState" class="state-box"><div class="icon">⏳</div>Loading…</div>
+
+        <div class="table-wrap" id="invoicesWrap" style="display:none">
+          <table class="data-table">
+            <thead><tr>
+              <th>Invoice #</th><th>Client</th><th>Date</th>
+              <th>Grand Total</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="invoicesBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- ─── CHANGE PASSWORD TAB ─── -->
+      <div class="tab-pane" id="tab-password">
+        <div class="admin-topbar">
+          <h1>Change Password</h1>
+        </div>
+        <div style="max-width:420px">
+          <div class="card">
+            <div id="passwordAlert"></div>
+            <form id="passwordForm">
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Min 6 characters" required/>
+              </div>
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPassword" placeholder="Repeat new password" required/>
+              </div>
+              <button type="submit" class="btn btn-primary" id="passwordSaveBtn">Update Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- Client Modal -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <span class="modal-title" id="clientModalTitle">New Client</span>
+      <button class="modal-close" onclick="closeModal('clientModal')">×</button>
+    </div>
+    <div id="clientModalAlert"></div>
+    <form id="clientForm">
+      <input type="hidden" id="clientId"/>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="clientFullName" placeholder="Eng. Ahmed Hassan"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Username *</label>
+          <input type="text" id="clientUsername" placeholder="ahmed.hassan" required/>
+        </div>
+        <div class="form-group">
+          <label>Password *</label>
+          <input type="password" id="clientPassword" placeholder="Min 6 characters"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="clientEmail" placeholder="ahmed@company.com"/>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button type="submit" class="btn btn-primary" id="clientSaveBtn">Save Client</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('clientModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+<div class="modal-overlay" id="invoiceModal">
+  <div class="modal" style="max-width:800px">
+    <div class="modal-header">
+      <span class="modal-title" id="invoiceModalTitle">New Invoice</span>
+      <button class="modal-close" onclick="closeModal('invoiceModal')">×</button>
+    </div>
+    <div id="invoiceModalAlert"></div>
+    <form id="invoiceForm">
+      <input type="hidden" id="invoiceId"/>
+
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:14px">Client</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Client *</label>
+          <select id="invClientId" required>
+            <option value="">— Select client —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="invStatus">
+            <option value="draft">Draft</option>
+            <option value="sent">Sent</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 14px">Invoice Details</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Invoice Number</label>
+          <input type="text" id="invNumber" placeholder="Q-2025-001"/>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="invDate"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Quote To (Recipient Name)</label>
+        <input type="text" id="invQuoteTo" placeholder="Eng. Mohamed E. Zahran"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="text" id="invPhone" placeholder="+20 1xx xxx xxxx"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="invEmail" placeholder="client@company.com"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" id="invAddress" placeholder="Client address"/>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 14px">Company (on Invoice)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="invCompanyName" value="DrawBit"/>
+        </div>
+        <div class="form-group">
+          <label>Website</label>
+          <input type="text" id="invCompanyWebsite" value="www.drawbit.tech"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Company Address</label>
+        <input type="text" id="invCompanyAddress" value="37, Hassan Aflaton St., Ard El Golf, Nasr City"/>
+      </div>
+      <div class="form-group">
+        <label>Logo URL (optional)</label>
+        <input type="url" id="invLogoUrl" placeholder="https://…/logo.png"/>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 14px">
+        Line Items
+        <button type="button" class="btn btn-outline btn-sm" style="margin-left:12px" onclick="addLineItem()">+ Add Row</button>
+      </div>
+
+      <table class="line-items-table">
+        <thead><tr>
+          <th style="width:50%">Description</th>
+          <th style="width:12%">QTY</th>
+          <th style="width:18%">Unit Price</th>
+          <th style="width:15%">Total</th>
+          <th style="width:5%"></th>
+        </tr></thead>
+        <tbody id="lineItemsBody"></tbody>
+      </table>
+
+      <div class="form-row" style="margin-top:18px">
+        <div class="form-group">
+          <label>VAT %</label>
+          <input type="number" id="invVat" value="14" min="0" max="100" step="0.01" onchange="recalcTotals()"/>
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <input type="text" id="invCurrency" value="USD" maxlength="10"/>
+        </div>
+      </div>
+
+      <!-- Live totals -->
+      <div class="totals-preview">
+        <div class="row"><span>Sub Total</span><span id="previewSub">0.00</span></div>
+        <div class="row"><span id="previewVatLabel">14% VAT</span><span id="previewVat">0.00</span></div>
+        <div class="row"><span>Grand Total</span><span id="previewGrand">0.00</span></div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin:18px 0 14px">Terms &amp; Conditions</div>
+      <div class="form-group">
+        <textarea id="invTerms" style="min-height:130px;font-size:0.85rem">Quote Validity: Current quote is valid for one week from its date.
+Prices: Quote pricing is in USD and including 14% VAT.
+Delivery: Electronic License Delivery within 2-3 weeks from PO date
+Payment terms:
+• 100% upon delivery</textarea>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <button type="submit" class="btn btn-primary" id="invoiceSaveBtn">💾 Save Invoice</button>
+        <button type="button" class="btn btn-outline" id="invoicePdfBtn" onclick="downloadInvoicePdf()" style="display:none">⬇ Generate PDF</button>
+        <button type="button" class="btn btn-ghost" onclick="closeModal('invoiceModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPT ═══════════════════ -->
+<script>
+const API = '/api';
+let adminToken = null;
+let clientsList = [];
+let currentInvoiceId = null;
+
+// ── Auth ──
+function getAdminToken() { return localStorage.getItem('db_admin_token'); }
+function saveAdminAuth(token, user) {
+  localStorage.setItem('db_admin_token', token);
+  localStorage.setItem('db_admin_user', JSON.stringify(user));
+  adminToken = token;
+}
+function clearAdminAuth() {
+  localStorage.removeItem('db_admin_token');
+  localStorage.removeItem('db_admin_user');
+}
+function adminLogout() { clearAdminAuth(); location.reload(); }
+
+async function apiFetch(path, opts = {}) {
+  const token = adminToken || getAdminToken();
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+  });
+  if (res.status === 401) { adminLogout(); return null; }
+  return res.json();
+}
+
+// ── Admin Login ──
+document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('adminLoginBtn');
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+
+  const data = await fetch(`${API}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: document.getElementById('adminUser').value.trim(),
+      password: document.getElementById('adminPass').value,
+    }),
+  }).then(r => r.json()).catch(() => null);
+
+  btn.textContent = 'Sign In to Admin'; btn.disabled = false;
+
+  if (!data || data.error) {
+    document.getElementById('adminLoginAlert').innerHTML =
+      `<div class="alert alert-error">${data?.error || 'Connection error'}</div>`;
+    return;
+  }
+  if (data.user.role !== 'admin') {
+    document.getElementById('adminLoginAlert').innerHTML =
+      `<div class="alert alert-error">This account does not have admin access.</div>`;
+    return;
+  }
+  saveAdminAuth(data.token, data.user);
+  showAdminShell(data.user);
+});
+
+function showAdminShell(user) {
+  document.getElementById('adminLogin').style.display  = 'none';
+  document.getElementById('adminShell').style.display  = 'block';
+  document.getElementById('adminName').textContent = user.full_name || user.username;
+  loadClients();
+  loadInvoices();
+}
+
+// ── Tab switching ──
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ── Modals ──
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (id === 'clientModal')  resetClientForm();
+  if (id === 'invoiceModal') resetInvoiceForm();
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ════════════════════ CLIENTS ════════════════════
+
+async function loadClients() {
+  const data = await apiFetch('/clients');
+  const state = document.getElementById('clientsState');
+  const wrap  = document.getElementById('clientsWrap');
+
+  if (!data || data.error) {
+    state.innerHTML = `<div class="icon">⚠️</div>${data?.error || 'Failed to load'}`;
+    return;
+  }
+  clientsList = data;
+  populateClientSelect();
+
+  if (data.length === 0) {
+    state.innerHTML = `<div class="icon">👥</div>No clients yet. Create one to get started.`;
+    return;
+  }
+
+  document.getElementById('clientsBody').innerHTML = data.map(c => `
+    <tr>
+      <td><strong>${c.full_name || '—'}</strong></td>
+      <td style="font-family:monospace;font-size:0.85rem">${c.username}</td>
+      <td>${c.email || '—'}</td>
+      <td>${new Date(c.created_at).toLocaleDateString('en-GB')}</td>
+      <td style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="editClient(${c.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteClient(${c.id},'${c.full_name || c.username}')">Delete</button>
+      </td>
+    </tr>`).join('');
+
+  state.style.display = 'none';
+  wrap.style.display  = 'block';
+}
+
+function populateClientSelect() {
+  const sel = document.getElementById('invClientId');
+  const current = sel.value;
+  sel.innerHTML = `<option value="">— Select client —</option>` +
+    clientsList.map(c => `<option value="${c.id}">${c.full_name || c.username} (${c.username})</option>`).join('');
+  if (current) sel.value = current;
+}
+
+function resetClientForm() {
+  document.getElementById('clientId').value       = '';
+  document.getElementById('clientFullName').value = '';
+  document.getElementById('clientUsername').value = '';
+  document.getElementById('clientPassword').value = '';
+  document.getElementById('clientEmail').value    = '';
+  document.getElementById('clientModalTitle').textContent = 'New Client';
+  document.getElementById('clientModalAlert').innerHTML   = '';
+  document.getElementById('clientUsername').disabled = false;
+  document.getElementById('clientPassword').placeholder  = 'Min 6 characters';
+  document.getElementById('clientPassword').required     = true;
+}
+
+async function editClient(id) {
+  const c = clientsList.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('clientId').value       = c.id;
+  document.getElementById('clientFullName').value = c.full_name || '';
+  document.getElementById('clientUsername').value = c.username;
+  document.getElementById('clientUsername').disabled = true;
+  document.getElementById('clientEmail').value    = c.email || '';
+  document.getElementById('clientPassword').placeholder = 'Leave blank to keep current';
+  document.getElementById('clientPassword').required    = false;
+  document.getElementById('clientModalTitle').textContent = `Edit: ${c.full_name || c.username}`;
+  openModal('clientModal');
+}
+
+async function deleteClient(id, name) {
+  if (!confirm(`Delete client "${name}"? All their invoices will also be deleted.`)) return;
+  const data = await apiFetch(`/clients/${id}`, { method: 'DELETE' });
+  if (data?.success) loadClients();
+  else alert(data?.error || 'Delete failed');
+}
+
+document.getElementById('clientForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn   = document.getElementById('clientSaveBtn');
+  const id    = document.getElementById('clientId').value;
+  const body  = {
+    full_name: document.getElementById('clientFullName').value,
+    email:     document.getElementById('clientEmail').value,
+  };
+  if (!id) {
+    body.username = document.getElementById('clientUsername').value.trim();
+    body.password = document.getElementById('clientPassword').value;
+  } else {
+    const pw = document.getElementById('clientPassword').value;
+    if (pw) body.password = pw;
+  }
+
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  const data = await apiFetch(id ? `/clients/${id}` : '/clients', {
+    method: id ? 'PUT' : 'POST',
+    body,
+  });
+
+  btn.textContent = 'Save Client'; btn.disabled = false;
+
+  if (data?.error) {
+    document.getElementById('clientModalAlert').innerHTML =
+      `<div class="alert alert-error">${data.error}</div>`;
+    return;
+  }
+  closeModal('clientModal');
+  loadClients();
+});
+
+// ════════════════════ INVOICES ════════════════════
+
+async function loadInvoices() {
+  const data = await apiFetch('/invoices');
+  const state = document.getElementById('invoicesState');
+  const wrap  = document.getElementById('invoicesWrap');
+
+  if (!data || data.error) {
+    state.innerHTML = `<div class="icon">⚠️</div>${data?.error || 'Failed to load'}`;
+    return;
+  }
+
+  if (data.length === 0) {
+    state.innerHTML = `<div class="icon">📄</div>No invoices yet. Create one!`;
+    return;
+  }
+
+  document.getElementById('invoicesBody').innerHTML = data.map(inv => {
+    const date  = inv.invoice_date ? new Date(inv.invoice_date).toLocaleDateString('en-GB') : '—';
+    const total = inv.grand_total
+      ? Number(inv.grand_total).toLocaleString('en-US',{minimumFractionDigits:2})
+      : '—';
+    return `<tr>
+      <td>${inv.invoice_number || '#' + inv.id}</td>
+      <td>${inv.client_name || inv.username || '—'}</td>
+      <td>${date}</td>
+      <td>${total} ${inv.currency || 'USD'}</td>
+      <td><span class="badge badge-${inv.status}">${inv.status}</span></td>
+      <td style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="editInvoice(${inv.id})">Edit</button>
+        <a class="btn btn-outline btn-sm" href="${API}/invoices/${inv.id}/pdf?token=${getAdminToken()}" target="_blank">⬇ PDF</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteInvoice(${inv.id})">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  state.style.display = 'none';
+  wrap.style.display  = 'block';
+}
+
+// ── Line Items ──
+function addLineItem(desc='', qty=1, unitPrice='') {
+  const idx = Date.now();
+  const row = document.createElement('tr');
+  row.dataset.key = idx;
+  row.innerHTML = `
+    <td><input type="text" placeholder="Item description" value="${desc}" oninput="recalcTotals()"/></td>
+    <td><input type="number" placeholder="1" value="${qty}" min="0" step="0.01" style="text-align:center" oninput="recalcTotals()"/></td>
+    <td><input type="number" placeholder="0.00" value="${unitPrice}" min="0" step="0.01" oninput="recalcTotals()"/></td>
+    <td><input type="text" readonly tabindex="-1" style="background:rgba(46,204,113,0.05);color:var(--green)" id="rowTotal_${idx}" value="0.00"/></td>
+    <td><button type="button" onclick="this.closest('tr').remove();recalcTotals()" style="background:none;border:none;cursor:pointer;color:#e74c3c;font-size:1.1rem">×</button></td>`;
+  document.getElementById('lineItemsBody').appendChild(row);
+  recalcTotals();
+}
+
+function recalcTotals() {
+  const rows  = [...document.getElementById('lineItemsBody').querySelectorAll('tr')];
+  let subtotal = 0;
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('input');
+    const qty   = parseFloat(cells[1]?.value) || 0;
+    const price = parseFloat(cells[2]?.value) || 0;
+    const total = qty * price;
+    subtotal += total;
+    const key = row.dataset.key;
+    const totalEl = document.getElementById(`rowTotal_${key}`);
+    if (totalEl) totalEl.value = fmtNum(total);
+  });
+
+  const vatPct  = parseFloat(document.getElementById('invVat').value) || 0;
+  const vatAmt  = subtotal * (vatPct / 100);
+  const grand   = subtotal + vatAmt;
+  const cur     = document.getElementById('invCurrency').value || 'USD';
+
+  document.getElementById('previewSub').textContent       = `${fmtNum(subtotal)} ${cur}`;
+  document.getElementById('previewVatLabel').textContent  = `${vatPct}% VAT`;
+  document.getElementById('previewVat').textContent       = `${fmtNum(vatAmt)} ${cur}`;
+  document.getElementById('previewGrand').textContent     = `${fmtNum(grand)} ${cur}`;
+}
+
+function fmtNum(n) {
+  return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function getLineItems() {
+  return [...document.getElementById('lineItemsBody').querySelectorAll('tr')].map(row => {
+    const cells = row.querySelectorAll('input');
+    return {
+      description: cells[0]?.value?.trim() || '',
+      qty:         parseFloat(cells[1]?.value) || 1,
+      unit_price:  parseFloat(cells[2]?.value) || 0,
+    };
+  }).filter(r => r.description);
+}
+
+function resetInvoiceForm() {
+  currentInvoiceId = null;
+  document.getElementById('invoiceId').value = '';
+  document.getElementById('invoiceModalTitle').textContent = 'New Invoice';
+  document.getElementById('invoiceModalAlert').innerHTML   = '';
+  document.getElementById('invoicePdfBtn').style.display   = 'none';
+  document.getElementById('lineItemsBody').innerHTML = '';
+  document.getElementById('invNumber').value     = '';
+  document.getElementById('invDate').value       = new Date().toISOString().split('T')[0];
+  document.getElementById('invQuoteTo').value    = '';
+  document.getElementById('invPhone').value      = '';
+  document.getElementById('invEmail').value      = '';
+  document.getElementById('invAddress').value    = '';
+  document.getElementById('invClientId').value   = '';
+  document.getElementById('invStatus').value     = 'draft';
+  document.getElementById('invVat').value        = '14';
+  document.getElementById('invCurrency').value   = 'USD';
+  document.getElementById('invCompanyName').value    = 'DrawBit';
+  document.getElementById('invCompanyAddress').value = '37, Hassan Aflaton St., Ard El Golf, Nasr City';
+  document.getElementById('invCompanyWebsite').value = 'www.drawbit.tech';
+  document.getElementById('invLogoUrl').value    = '';
+  document.getElementById('invTerms').value      =
+    `Quote Validity: Current quote is valid for one week from its date.\nPrices: Quote pricing is in USD and including 14% VAT.\nDelivery: Electronic License Delivery within 2-3 weeks from PO date\nPayment terms:\n• 100% upon delivery`;
+  addLineItem(); // start with one empty row
+  recalcTotals();
+}
+
+function openInvoiceModal() {
+  populateClientSelect();
+  resetInvoiceForm();
+  openModal('invoiceModal');
+}
+
+async function editInvoice(id) {
+  populateClientSelect();
+  resetInvoiceForm();
+
+  const data = await apiFetch(`/invoices/${id}`);
+  if (!data || data.error) { alert('Failed to load invoice'); return; }
+
+  currentInvoiceId = id;
+  document.getElementById('invoiceId').value         = id;
+  document.getElementById('invoiceModalTitle').textContent = `Edit Invoice ${data.invoice_number || '#'+id}`;
+  document.getElementById('invClientId').value       = data.client_id;
+  document.getElementById('invStatus').value         = data.status;
+  document.getElementById('invNumber').value         = data.invoice_number  || '';
+  document.getElementById('invDate').value           = data.invoice_date
+    ? (data.invoice_date.includes('/') ? data.invoice_date.split('/').reverse().join('-') : data.invoice_date)
+    : '';
+  document.getElementById('invQuoteTo').value        = data.quote_to        || '';
+  document.getElementById('invPhone').value          = data.client_phone    || '';
+  document.getElementById('invEmail').value          = data.client_email    || '';
+  document.getElementById('invAddress').value        = data.client_address  || '';
+  document.getElementById('invCompanyName').value    = data.company_name    || '';
+  document.getElementById('invCompanyAddress').value = data.company_address || '';
+  document.getElementById('invCompanyWebsite').value = data.company_website || '';
+  document.getElementById('invLogoUrl').value        = data.company_logo_url|| '';
+  document.getElementById('invVat').value            = data.vat_percent     || 14;
+  document.getElementById('invCurrency').value       = data.currency        || 'USD';
+  document.getElementById('invTerms').value          = data.terms           || '';
+
+  // Line items
+  document.getElementById('lineItemsBody').innerHTML = '';
+  (data.line_items || []).forEach(item => addLineItem(item.description, item.qty, item.unit_price));
+  if (!data.line_items?.length) addLineItem();
+
+  recalcTotals();
+  document.getElementById('invoicePdfBtn').style.display = 'inline-flex';
+  openModal('invoiceModal');
+}
+
+async function deleteInvoice(id) {
+  if (!confirm('Delete this invoice? This cannot be undone.')) return;
+  const data = await apiFetch(`/invoices/${id}`, { method: 'DELETE' });
+  if (data?.success) loadInvoices();
+  else alert(data?.error || 'Delete failed');
+}
+
+document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('invoiceSaveBtn');
+  const id  = document.getElementById('invoiceId').value;
+
+  const body = {
+    client_id:       parseInt(document.getElementById('invClientId').value),
+    invoice_number:  document.getElementById('invNumber').value,
+    invoice_date:    document.getElementById('invDate').value || null,
+    quote_to:        document.getElementById('invQuoteTo').value,
+    client_phone:    document.getElementById('invPhone').value,
+    client_email:    document.getElementById('invEmail').value,
+    client_address:  document.getElementById('invAddress').value,
+    company_name:    document.getElementById('invCompanyName').value,
+    company_address: document.getElementById('invCompanyAddress').value,
+    company_website: document.getElementById('invCompanyWebsite').value,
+    company_logo_url:document.getElementById('invLogoUrl').value || null,
+    vat_percent:     parseFloat(document.getElementById('invVat').value),
+    currency:        document.getElementById('invCurrency').value,
+    terms:           document.getElementById('invTerms').value,
+    status:          document.getElementById('invStatus').value,
+    line_items:      getLineItems(),
+  };
+
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  const data = await apiFetch(id ? `/invoices/${id}` : '/invoices', {
+    method: id ? 'PUT' : 'POST',
+    body,
+  });
+
+  btn.textContent = 'Save Invoice'; btn.disabled = false;
+
+  if (data?.error) {
+    document.getElementById('invoiceModalAlert').innerHTML =
+      `<div class="alert alert-error">${data.error}</div>`;
+    return;
+  }
+
+  currentInvoiceId = data.id;
+  document.getElementById('invoiceId').value = data.id;
+  document.getElementById('invoiceModalTitle').textContent = `Edit Invoice ${data.invoice_number || '#'+data.id}`;
+  document.getElementById('invoicePdfBtn').style.display = 'inline-flex';
+  document.getElementById('invoiceModalAlert').innerHTML =
+    `<div class="alert alert-success">✅ Invoice saved successfully.</div>`;
+  loadInvoices();
+});
+
+function downloadInvoicePdf() {
+  const id = document.getElementById('invoiceId').value || currentInvoiceId;
+  if (!id) return;
+  window.open(`${API}/invoices/${id}/pdf?token=${getAdminToken()}`, '_blank');
+}
+
+// ── Init ──
+(function init() {
+  const token = getAdminToken();
+  const user  = (() => { try { return JSON.parse(localStorage.getItem('db_admin_user')); } catch { return null; } })();
+  if (token && user?.role === 'admin') {
+    adminToken = token;
+    showAdminShell(user);
+  }
+})();
+
+// ── Change Password ──
+document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const alertEl = document.getElementById('passwordAlert');
+  const btn     = document.getElementById('passwordSaveBtn');
+  const newPw   = document.getElementById('newPassword').value;
+  const confPw  = document.getElementById('confirmPassword').value;
+
+  if (newPw !== confPw) {
+    alertEl.innerHTML = `<div class="alert alert-error">Passwords do not match.</div>`;
+    return;
+  }
+
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  const data = await apiFetch('/clients/me/password', {
+    method: 'PUT',
+    body: { password: newPw },
+  });
+
+  btn.textContent = 'Update Password'; btn.disabled = false;
+
+  if (data?.error) {
+    alertEl.innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+    return;
+  }
+
+  alertEl.innerHTML = `<div class="alert alert-success">✅ Password updated successfully.</div>`;
+  document.getElementById('passwordForm').reset();
+});
+</script>
+
+</body>
+</html>
