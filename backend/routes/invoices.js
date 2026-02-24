@@ -193,7 +193,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
         client_phone, client_address, client_email, payment_account,
         company_name, company_address, company_website, company_logo_url,
         vat_percent, currency, terms
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
       RETURNING *`,
       [
         client_id,
@@ -203,7 +203,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
         client_phone     || null,
         client_address   || null,
         client_email     || null,
-        payment_account || null,
+        payment_account  || null,
         company_name     || 'DrawBit',
         company_address  || '37, Hassan Aflaton St., Ard El Golf, Nasr City',
         company_website  || 'www.drawbit.tech',
